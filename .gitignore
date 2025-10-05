@@ -1,0 +1,21 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+
+# Single dotenv file (sensitive credentials)
+.env
+
+# Uploads / attachments
+uploads/
+
+
+# Logs
+*.log
+
+
