@@ -1,0 +1,284 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block title %}All Complaints{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col md:flex-row justify-between items-start gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">All Complaints</h1>
+        <p class="text-gray-600">View and manage all lab complaint tickets</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
+</div>
+
+<!-- Filters Card -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <h3 class="text-lg font-semibold text-gray-700 flex items-center">
+            <i class="fas fa-filter mr-2"></i>
+            <span>Filters</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label for="statusFilter" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select id="statusFilter" class="form-control">
+                    <option value="all">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Terminated">Terminated</option>
+                </select>
+            </div>
+            <div>
+                <label for="priorityFilter" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                <select id="priorityFilter" class="form-control">
+                    <option value="all">All Priorities</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div>
+                <label for="searchFilter" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input id="searchFilter" type="text" class="form-control pl-10" placeholder="ID, name or email">
+                </div>
+            </div>
+            <div class="flex items-end pb-2">
+                <div class="flex items-center gap-2">
+                    <label class="flex items-center gap-2 cursor-pointer mr-2">
+                        <input id="archivedFilter" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-gray-700">Hide archived</span>
+                    </label>
+                    <button id="applyFiltersBtn" type="button" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                        <span>Apply Filters</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complaints Table -->
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <!-- Desktop View -->
+    <div class="hidden md:block overflow-x-auto">
+        <table class="w-full" aria-label="Complaints table">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reporter</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lab & Category</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="complaintRows" class="bg-white divide-y divide-gray-200">
+                {% for c in complaints %}
+                <tr data-status="{{ c.status }}" data-priority="{{ c.priority or '' }}" data-search="{{ (c.complaint_id ~ ' ' ~ c.email ~ ' ' ~ c.name)|lower }}" data-archived="{{ 'yes' if c.archived else 'no' }}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 w-2 h-2 rounded-full mr-2 
+                                {% if c.status == 'Pending' %}bg-amber-400
+                                {% elif c.status == 'In Progress' %}bg-blue-400
+                                {% elif c.status == 'Resolved' %}bg-green-400
+                                {% elif c.status == 'Terminated' %}bg-red-400
+                                {% endif %}"></div>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-900">{{ c.complaint_id }}</div>
+                                <div class="text-xs text-gray-500">{{ c.created_at.strftime('%d %b %Y') }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">{{ c.name }}</div>
+                        <div class="text-xs text-gray-500">{{ c.email }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">{{ c.lab.name }}</div>
+                        <div class="text-xs text-gray-500">{{ c.category }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="badge 
+                            {% if c.status == 'Pending' %}badge-pending
+                            {% elif c.status == 'In Progress' %}badge-in-progress
+                            {% elif c.status == 'Resolved' %}badge-resolved
+                            {% elif c.status == 'Terminated' %}badge-terminated
+                            {% endif %}">
+                            {{ c.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="badge 
+                            {% if c.priority == 'High' %}badge-high
+                            {% elif c.priority == 'Medium' %}badge-medium
+                            {% else %}badge-low
+                            {% endif %}">
+                            {{ c.priority or 'Low' }}
+                        </span>
+                        {% if c.tags and c.tags != 'none' %}
+                        <div class="text-xs text-gray-500 mt-1">Tags: {{ c.tags }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if c.assigned_admin %}
+                            <span class="flex items-center text-gray-900">
+                                <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center mr-2 text-xs font-bold">
+                                    {{ c.assigned_admin.name[0] }}
+                                </span>
+                                {{ c.assigned_admin.name }}
+                            </span>
+                        {% else %}
+                            <span class="text-gray-500">Unassigned</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ c.updated_at.strftime('%d %b %Y %H:%M') }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-right">
+                        <a href="{{ url_for('admin.complaint_detail', id=c.id) }}" class="btn btn-primary">
+                            <i class="fas fa-eye"></i>
+                            <span>View</span>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="px-6 py-10 text-center text-gray-500">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-lg font-medium">No complaints found</p>
+                            <p class="text-sm">There are no complaints matching your filters</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Mobile View -->
+    <div class="md:hidden">
+        <div id="mobilecomplaintRows" class="divide-y divide-gray-200">
+            {% for c in complaints %}
+            <div data-status="{{ c.status }}" data-priority="{{ c.priority or '' }}" data-search="{{ (c.complaint_id ~ ' ' ~ c.email ~ ' ' ~ c.name)|lower }}" data-archived="{{ 'yes' if c.archived else 'no' }}" class="p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-2 h-2 rounded-full mr-2 
+                            {% if c.status == 'Pending' %}bg-amber-400
+                            {% elif c.status == 'In Progress' %}bg-blue-400
+                            {% elif c.status == 'Resolved' %}bg-green-400
+                            {% elif c.status == 'Terminated' %}bg-red-400
+                            {% endif %}"></div>
+                        <div class="text-sm font-semibold text-gray-900">{{ c.complaint_id }}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="badge 
+                            {% if c.status == 'Pending' %}badge-pending
+                            {% elif c.status == 'In Progress' %}badge-in-progress
+                            {% elif c.status == 'Resolved' %}badge-resolved
+                            {% elif c.status == 'Terminated' %}badge-terminated
+                            {% endif %}">
+                            {{ c.status }}
+                        </span>
+                        <span class="badge 
+                            {% if c.priority == 'High' %}badge-high
+                            {% elif c.priority == 'Medium' %}badge-medium
+                            {% else %}badge-low
+                            {% endif %}">
+                            {{ c.priority or 'Low' }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div>
+                        <div class="text-xs text-gray-500">Reporter</div>
+                        <div class="text-sm text-gray-900">{{ c.name }}</div>
+                        <div class="text-xs text-gray-500">{{ c.email }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Lab & Category</div>
+                        <div class="text-sm text-gray-900">{{ c.lab.name }}</div>
+                        <div class="text-xs text-gray-500">{{ c.category }}</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div>
+                        <div class="text-xs text-gray-500">Assigned to</div>
+                        {% if c.assigned_admin %}
+                            <div class="flex items-center text-sm text-gray-900">
+                                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center mr-2 text-xs font-bold">
+                                    {{ c.assigned_admin.name[0] }}
+                                </span>
+                                {{ c.assigned_admin.name }}
+                            </div>
+                        {% else %}
+                            <div class="text-sm text-gray-500">Unassigned</div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Last updated</div>
+                        <div class="text-sm text-gray-900">{{ c.updated_at.strftime('%d %b %Y %H:%M') }}</div>
+                    </div>
+                </div>
+                
+                {% if c.tags and c.tags != 'none' %}
+                <div class="mb-3">
+                    <div class="text-xs text-gray-500">Tags</div>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        {% for tag in c.tags.split(',') %}
+                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded-full">{{ tag.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="flex justify-between items-center">
+                    <div class="text-xs text-gray-500">{{ c.created_at.strftime('%d %b %Y') }}</div>
+                    <a href="{{ url_for('admin.complaint_detail', id=c.id) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-eye"></i>
+                        <span>View</span>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="px-6 py-10 text-center text-gray-500">
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-lg font-medium">No complaints found</p>
+                    <p class="text-sm">There are no complaints matching your filters</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% if complaints|length > 10 %}
+    <div class="px-6 py-3 flex items-center justify-between border-t">
+        <div class="text-sm text-gray-500">
+            Showing <span class="font-medium">{{ complaints|length }}</span> complaints
+        </div>
+        <div class="flex gap-1">
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-50">Previous</button>
+            <button class="px-3 py-1 border rounded bg-indigo-50 text-indigo-600 font-medium">1</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-50">Next</button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

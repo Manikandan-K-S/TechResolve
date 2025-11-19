@@ -1,0 +1,214 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Settings</h1>
+    <p class="text-gray-600">Manage system configuration and preferences</p>
+</div>
+
+<div class="grid grid-cols-1 gap-6">
+    <!-- Profile Settings -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="card-header">
+            <h3 class="font-semibold text-gray-700">Profile Settings</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.settings') }}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="hidden" name="form_type" value="profile">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" value="{{ admin.name if admin else session.get('admin_name', '') }}" required>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ admin.email if admin else '' }}" disabled>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="profile_picture" class="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                            {{ session.get('admin_name', 'A')[0] }}
+                        </div>
+                        <div>
+                            <input type="file" id="profile_picture" name="profile_picture" class="form-control" accept="image/*">
+                            <p class="text-sm text-gray-500 mt-1">Max file size: 2MB. Supported formats: JPG, PNG</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span>Save Changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Security Settings -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="card-header">
+            <h3 class="font-semibold text-gray-700">Security</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.settings') }}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="hidden" name="form_type" value="password">
+                <div class="md:col-span-2 mb-3">
+                    <h4 class="text-md font-medium text-gray-700">Change Password</h4>
+                </div>
+                
+                <div>
+                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" class="form-control" required>
+                </div>
+                
+                <div class="md:col-span-2 border-t pt-4 mt-2"></div>
+                
+                <div>
+                    <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <input type="password" id="new_password" name="new_password" class="form-control" required minlength="6">
+                </div>
+                
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="6">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-lock"></i>
+                        <span>Update Password</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notification Settings -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="card-header">
+            <h3 class="font-semibold text-gray-700">Notification Preferences</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.settings') }}">
+                <input type="hidden" name="form_type" value="notifications">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Email Notifications</h4>
+                            <p class="text-xs text-gray-500">Receive email notifications for new complaints</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="email_notifications" {% if notification_prefs.email_notifications %}checked{% endif %} aria-label="Email Notifications">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Assignment Notifications</h4>
+                            <p class="text-xs text-gray-500">Notify me when I'm assigned to a complaint</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="assignment_notifications" {% if notification_prefs.assignment_notifications %}checked{% endif %} aria-label="Assignment Notifications">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Status Updates</h4>
+                            <p class="text-xs text-gray-500">Notify me when complaint status changes</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="status_notifications" {% if notification_prefs.status_notifications %}checked{% endif %} aria-label="Status Update Notifications">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Daily Summary</h4>
+                            <p class="text-xs text-gray-500">Send daily summary of activity</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="daily_summary" {% if notification_prefs.daily_summary %}checked{% endif %} aria-label="Daily Summary">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span>Save Preferences</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Toggle switch styles */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #4f46e5;
+    }
+    
+    input:focus + .slider {
+        box-shadow: 0 0 1px #4f46e5;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .slider.round {
+        border-radius: 24px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}

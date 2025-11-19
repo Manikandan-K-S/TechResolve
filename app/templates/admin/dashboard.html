@@ -1,0 +1,236 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+    <p class="text-gray-600">Welcome back, {{ session.get('admin_name', 'Admin') }}!</p>
+</div>
+
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <div class="stat-card border-indigo-500">
+        <div class="stat-icon bg-indigo-100 text-indigo-600">
+            <i class="fas fa-clipboard-list text-xl"></i>
+        </div>
+        <div>
+            <div class="text-sm font-medium text-gray-500">Total Complaints</div>
+            <div class="text-2xl font-bold text-gray-800">{{ total }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card border-amber-500">
+        <div class="stat-icon bg-amber-100 text-amber-600">
+            <i class="fas fa-clock text-xl"></i>
+        </div>
+        <div>
+            <div class="text-sm font-medium text-gray-500">Pending Complaints</div>
+            <div class="text-2xl font-bold text-gray-800">{{ pending }}</div>
+            <div class="text-xs text-amber-600 mt-1">Requires attention</div>
+        </div>
+    </div>
+
+    <div class="stat-card border-blue-500">
+        <div class="stat-icon bg-blue-100 text-blue-600">
+            <i class="fas fa-spinner text-xl"></i>
+        </div>
+        <div>
+            <div class="text-sm font-medium text-gray-500">In Progress</div>
+            <div class="text-2xl font-bold text-gray-800">{{ in_progress }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card border-green-500">
+        <div class="stat-icon bg-green-100 text-green-600">
+            <i class="fas fa-check-circle text-xl"></i>
+        </div>
+        <div>
+            <div class="text-sm font-medium text-gray-500">Resolved</div>
+            <div class="text-2xl font-bold text-gray-800">{{ resolved }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mb-8 bg-white rounded-xl shadow-sm p-6">
+    <h3 class="text-lg font-semibold mb-4 text-gray-700">Quick Actions</h3>
+    <div class="flex flex-wrap gap-4">
+        <a href="{{ url_for('admin.complaint_list') }}" class="btn btn-primary">
+            <i class="fas fa-clipboard-list"></i>
+            <span>View All Complaints</span>
+        </a>
+        <a href="{{ url_for('admin.complaint_list') }}?status=Pending" class="btn btn-primary">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Pending Complaints</span>
+        </a>
+        <a href="#" class="btn btn-secondary">
+            <i class="fas fa-chart-bar"></i>
+            <span>Generate Report</span>
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Status Distribution Chart -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700">Complaints Status</h3>
+        <div class="h-64">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Priority Distribution -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700">Complaints by Priority</h3>
+        <div class="h-64">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-700">Recent Activity</h3>
+        <a href="{{ url_for('admin.logs') }}" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+            View All <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+    </div>
+    
+    <div class="space-y-4">
+        {% for log in recent_logs %}
+        <div class="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center
+                    {% if log.action == 'STATUS_CHANGED' %}bg-blue-100
+                    {% elif log.action == 'TAG_CHANGED' %}bg-purple-100
+                    {% elif log.action == 'PRIORITY_CHANGED' %}bg-red-100
+                    {% elif log.action == 'ADMIN_ASSIGNED' %}bg-green-100
+                    {% elif log.action == 'RESOLUTION_NOTES_UPDATED' %}bg-teal-100
+                    {% elif log.action == 'DESCRIPTION_ADDED' %}bg-cyan-100
+                    {% elif log.action == 'ISSUE_VIEWED' %}bg-gray-100
+                    {% else %}bg-gray-100{% endif %}">
+                    <i class="fas 
+                        {% if log.action == 'STATUS_CHANGED' %}fa-exchange-alt text-blue-600
+                        {% elif log.action == 'TAG_CHANGED' %}fa-tag text-purple-600
+                        {% elif log.action == 'PRIORITY_CHANGED' %}fa-exclamation-circle text-red-600
+                        {% elif log.action == 'ADMIN_ASSIGNED' %}fa-user-check text-green-600
+                        {% elif log.action == 'RESOLUTION_NOTES_UPDATED' %}fa-sticky-note text-teal-600
+                        {% elif log.action == 'DESCRIPTION_ADDED' %}fa-align-left text-cyan-600
+                        {% elif log.action == 'ISSUE_VIEWED' %}fa-eye text-gray-600
+                        {% else %}fa-circle text-gray-600{% endif %}"></i>
+                </div>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start gap-2">
+                    <div>
+                        <div class="font-medium text-sm text-gray-900">
+                            {% if log.action == 'STATUS_CHANGED' %}
+                                Status changed to <span class="badge badge-{{ log.new_value|lower|replace(' ', '-') }}">{{ log.new_value }}</span>
+                            {% elif log.action == 'ADMIN_ASSIGNED' %}
+                                Assigned to <span class="font-semibold text-indigo-600">{{ log.new_value }}</span>
+                            {% elif log.action == 'TAG_CHANGED' %}
+                                Tags updated to <span class="text-purple-600 font-medium">{{ log.new_value }}</span>
+                            {% elif log.action == 'PRIORITY_CHANGED' %}
+                                Priority changed to <span class="badge badge-{{ log.new_value|lower }}">{{ log.new_value }}</span>
+                            {% elif log.action == 'RESOLUTION_NOTES_UPDATED' %}
+                                Resolution notes updated
+                            {% elif log.action == 'DESCRIPTION_ADDED' %}
+                                Description added
+                            {% elif log.action == 'ISSUE_VIEWED' %}
+                                Issue viewed
+                            {% else %}
+                                {{ log.action.replace('_', ' ').title() }}
+                            {% endif %}
+                        </div>
+                        <div class="mt-1 text-xs text-gray-600">
+                            Complaint <a href="{{ url_for('admin.complaint_detail', id=log.complaint.id) }}" 
+                                       class="text-indigo-600 hover:text-indigo-800 font-medium">{{ log.complaint.complaint_id }}</a>
+                            {% if log.admin %}
+                                by <span class="font-medium text-gray-700">{{ log.admin.name }}</span>
+                            {% endif %}
+                        </div>
+                        {% if log.description and log.action == 'DESCRIPTION_ADDED' %}
+                            <div class="mt-2 p-2 bg-gray-100 rounded text-xs text-gray-700 max-w-md">
+                                {{ log.description[:100] }}{% if log.description|length > 100 %}...{% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-xs text-gray-500 whitespace-nowrap">
+                        {{ log.timestamp.strftime('%d %b, %H:%M') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-inbox text-4xl text-gray-300 mb-2"></i>
+            <p class="text-gray-500">No recent activity</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status distribution chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Progress', 'Resolved'],
+            datasets: [{
+                data: [{{ pending }}, {{ in_progress }}, {{ resolved }}],
+                backgroundColor: [
+                    '#fbbf24',  // amber-400
+                    '#60a5fa',  // blue-400
+                    '#34d399',  // green-400
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Priority chart
+    const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+    new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                label: 'Complaints by Priority',
+                data: [{{ high_priority }}, {{ total - high_priority - resolved }}, {{ resolved }}],
+                backgroundColor: [
+                    '#f87171',  // red-400
+                    '#fbbf24',  // amber-400
+                    '#34d399',  // green-400
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

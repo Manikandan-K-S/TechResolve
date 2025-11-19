@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Admins{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold text-blue-600 mb-6">Super Admin - Manage Admins</h2>
+
+    <!-- Create New Admin Form -->
+    <div class="bg-white p-6 rounded shadow mb-6">
+        <h3 class="text-lg font-semibold mb-4">Add New Admin</h3>
+        <form method="POST" action="{{ url_for('superadmin.manage_admins') }}" class="flex flex-col gap-4 max-w-md">
+            <div>
+                <label for="name" class="block font-medium mb-1">Name</label>
+                <input type="text" name="name" id="name" required
+                       class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label for="email" class="block font-medium mb-1">Email</label>
+                <input type="email" name="email" id="email" required
+                       class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label for="password" class="block font-medium mb-1">Password</label>
+                <input type="password" name="password" id="password" required
+                       class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400">
+            </div>
+            <button type="submit" class="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Create Admin</button>
+        </form>
+    </div>
+
+    <!-- Existing Admins Table -->
+    <div class="bg-white p-6 rounded shadow">
+        <h3 class="text-lg font-semibold mb-4">Existing Admins</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="px-4 py-3 text-left">ID</th>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Email</th>
+                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Created At</th>
+                        <th class="px-4 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for admin in admins %}
+                    <tr class="border-b hover:bg-gray-50 {% if not admin.is_active %}bg-gray-100 opacity-60{% endif %}">
+                        <td class="px-4 py-3">{{ admin.id }}</td>
+                        <td class="px-4 py-3">{{ admin.name }}</td>
+                        <td class="px-4 py-3">{{ admin.email }}</td>
+                        <td class="px-4 py-3">
+                            {% if admin.is_active %}
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    ✓ Active
+                                </span>
+                            {% else %}
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    ✗ Inactive
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3">{{ admin.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="px-4 py-3">
+                            {% if admin.is_active %}
+                                <form method="POST" action="{{ url_for('superadmin.delete_admin', admin_id=admin.id) }}" 
+                                      onsubmit="return confirm('Are you sure you want to deactivate this admin? All their records will be preserved.');">
+                                    <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm">
+                                        Deactivate
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{{ url_for('superadmin.restore_admin', admin_id=admin.id) }}">
+                                    <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm">
+                                        Restore
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

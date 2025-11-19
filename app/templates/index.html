@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - TechResolve{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Enhanced Design -->
+<div class="relative bg-gradient-to-br from-indigo-900 via-blue-800 to-purple-900 text-white overflow-hidden">
+    <!-- Animated Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px)"></div>
+    </div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+    
+    <div class="container mx-auto px-4 py-20 md:py-28 relative z-10">
+        <div class="flex flex-col md:flex-row items-center gap-12">
+            <!-- Left Content -->
+            <div class="md:w-1/2 space-y-8 text-center md:text-left">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span class="text-sm font-medium text-white">System Online & Active</span>
+                </div>
+                
+                <!-- Main Heading -->
+                <div>
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-purple-200">
+                            Welcome to
+                        </span>
+                        <br>
+                        <span class="text-white">TechResolve</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-blue-100 leading-relaxed max-w-2xl">
+                        Your intelligent complaint management system. Submit, track, and resolve technical issues with 
+                        <span class="font-semibold text-white">lightning speed</span> and 
+                        <span class="font-semibold text-white">complete transparency</span>.
+                    </p>
+                </div>
+                
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="{{ url_for('user.submit_complaint') }}" 
+                       class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-blue-900 bg-white rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-blue-500/50 hover:scale-105">
+                        <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-300"></span>
+                        <span class="relative flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Submit Complaint
+                        </span>
+                    </a>
+                    
+                    <a href="{{ url_for('user.track_complaint') }}" 
+                       class="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-white/10 backdrop-blur-sm rounded-xl border-2 border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 shadow-xl hover:scale-105">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Track Status
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
+                    <div class="text-center md:text-left">
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">24/7</div>
+                        <div class="text-sm text-blue-200">Available</div>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">&lt;2h</div>
+                        <div class="text-sm text-blue-200">Avg Response</div>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">98%</div>
+                        <div class="text-sm text-blue-200">Satisfaction</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Content - Illustration -->
+            <div class="md:w-1/2 relative">
+                <div class="relative">
+                    <!-- Decorative Elements -->
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-20 blur-2xl animate-pulse"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-br from-green-400 to-blue-500 rounded-full opacity-20 blur-2xl animate-pulse" style="animation-delay: 1s;"></div>
+                    
+                    <!-- Main Image Container -->
+                    <div class="relative bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/20 shadow-2xl">
+                        <img src="{{ url_for('static', filename='images/tech-support.svg') }}" 
+                             alt="TechResolve Illustration" 
+                             class="w-full drop-shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                        
+                        <!-- Floating Cards -->
+                        <div class="absolute -top-4 -left-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-xl animate-bounce">
+                            <div class="text-xs font-semibold">✓ Issue Resolved</div>
+                        </div>
+                        <div class="absolute -bottom-4 -right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-xl animate-bounce" style="animation-delay: 0.5s;">
+                            <div class="text-xs font-semibold">⚡ Fast Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wave Divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg class="w-full h-24 fill-current text-gray-50" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+        </svg>
+    </div>
+</div>
+
+<!-- Features Section with Modern Cards -->
+<div class="bg-gray-50 py-20">
+    <div class="container mx-auto px-4">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center justify-center px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold mb-4">
+                HOW IT WORKS
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Simple, Fast, Effective
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                TechResolve streamlines your complaint management process with powerful features designed for efficiency
+            </p>
+        </div>
+        
+        <!-- Feature Cards Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Card 1: Submit Issues -->
+            <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:-translate-y-2">
+                <!-- Icon Container -->
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div class="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <h3 class="font-bold text-2xl mb-3 text-gray-900">Submit Issues</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    Quickly report technical problems with detailed descriptions, file attachments, and automatic categorization
+                </p>
+                
+                <!-- Action Link -->
+                <a href="{{ url_for('user.submit_complaint') }}" 
+                   class="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 group-hover:gap-2 transition-all">
+                    Get Started
+                    <svg class="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                
+                <!-- Decorative Element -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -z-10 transform translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+            </div>
+            
+            <!-- Card 2: Track Progress -->
+            <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-2">
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-green-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div class="relative w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h3 class="font-bold text-2xl mb-3 text-gray-900">Track Progress</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    Monitor your complaint status in real-time with email or complaint ID. Get instant updates on every change
+                </p>
+                
+                <a href="{{ url_for('user.track_complaint') }}" 
+                   class="inline-flex items-center text-green-600 font-semibold hover:text-green-700 group-hover:gap-2 transition-all">
+                    Track Now
+                    <svg class="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                
+                <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full -z-10 transform translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+            </div>
+            
+            <!-- Card 3: Get Notified -->
+            <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-purple-200 hover:-translate-y-2">
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-purple-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div class="relative w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h3 class="font-bold text-2xl mb-3 text-gray-900">Get Notified</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    Receive instant email notifications whenever your complaint status changes or gets updated
+                </p>
+                
+                <div class="inline-flex items-center text-purple-600 font-semibold">
+                    Automatic Updates
+                    <svg class="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                
+                <div class="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -z-10 transform translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+            </div>
+            
+            <!-- Card 4: Secure System -->
+            <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-orange-200 hover:-translate-y-2">
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-orange-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div class="relative w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h3 class="font-bold text-2xl mb-3 text-gray-900">Secure System</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    Enterprise-grade security with role-based access control and comprehensive activity logging
+                </p>
+                
+                <a href="{{ url_for('admin.login') }}" 
+                   class="inline-flex items-center text-orange-600 font-semibold hover:text-orange-700 group-hover:gap-2 transition-all">
+                    Admin Login
+                    <svg class="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                
+                <div class="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-full -z-10 transform translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+            </div>
+        </div>
+        
+        <!-- Additional Features List -->
+        <div class="mt-16 bg-white rounded-2xl shadow-xl p-8 md:p-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-900 mb-2">Lightning Fast</h4>
+                        <p class="text-gray-600">Average response time under 2 hours with automated routing</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-900 mb-2">100% Transparent</h4>
+                        <p class="text-gray-600">Complete visibility with detailed activity logs and history</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-900 mb-2">24/7 Availability</h4>
+                        <p class="text-gray-600">Submit and track complaints anytime, anywhere</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Choose Section with Animated Stats -->
+<div class="relative bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 text-white py-20 overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center justify-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-semibold mb-4">
+                WHY CHOOSE US
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                Built for Speed, Designed for Results
+            </h2>
+            <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+                Experience the difference with our intelligent complaint management system
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Stat Card 1 -->
+            <div class="group relative">
+                <div class="absolute inset-0 bg-white rounded-2xl blur opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <div class="relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="text-5xl md:text-6xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-400">
+                        Fast
+                    </div>
+                    <p class="text-lg text-blue-100 leading-relaxed">
+                        Quick response time with automated assignment and intelligent routing system
+                    </p>
+                    <div class="mt-6 pt-6 border-t border-white/20">
+                        <div class="text-3xl font-bold">~2h</div>
+                        <div class="text-sm text-blue-200">Average Response</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stat Card 2 -->
+            <div class="group relative">
+                <div class="absolute inset-0 bg-white rounded-2xl blur opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <div class="relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div class="text-5xl md:text-6xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-green-200 to-emerald-400">
+                        Efficient
+                    </div>
+                    <p class="text-lg text-blue-100 leading-relaxed">
+                        Streamlined process from submission to resolution with minimal overhead
+                    </p>
+                    <div class="mt-6 pt-6 border-t border-white/20">
+                        <div class="text-3xl font-bold">95%+</div>
+                        <div class="text-sm text-blue-200">Resolution Rate</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stat Card 3 -->
+            <div class="group relative">
+                <div class="absolute inset-0 bg-white rounded-2xl blur opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <div class="relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </div>
+                    <div class="text-5xl md:text-6xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-cyan-400">
+                        Transparent
+                    </div>
+                    <p class="text-lg text-blue-100 leading-relaxed">
+                        Full visibility into complaint status, history, and admin activity logs
+                    </p>
+                    <div class="mt-6 pt-6 border-t border-white/20">
+                        <div class="text-3xl font-bold">100%</div>
+                        <div class="text-sm text-blue-200">Visibility</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trust Indicators -->
+        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="text-white/80">
+                <div class="text-4xl font-bold text-white mb-2">500+</div>
+                <div class="text-sm text-blue-200">Issues Resolved</div>
+            </div>
+            <div class="text-white/80">
+                <div class="text-4xl font-bold text-white mb-2">98%</div>
+                <div class="text-sm text-blue-200">Satisfaction Rate</div>
+            </div>
+            <div class="text-white/80">
+                <div class="text-4xl font-bold text-white mb-2">24/7</div>
+                <div class="text-sm text-blue-200">System Uptime</div>
+            </div>
+            <div class="text-white/80">
+                <div class="text-4xl font-bold text-white mb-2">4</div>
+                <div class="text-sm text-blue-200">Lab Networks</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Access Section with Modern CTA -->
+<div class="bg-gray-900 py-20">
+    <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl shadow-2xl overflow-hidden border border-gray-700">
+                <div class="grid md:grid-cols-2 gap-0">
+                    <!-- Left Side - Content -->
+                    <div class="p-12 flex flex-col justify-center">
+                        <div class="inline-flex items-center px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-full text-sm font-semibold mb-6 w-fit">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                            SECURE ACCESS
+                        </div>
+                        
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                            Administrative Portal
+                        </h2>
+                        <p class="text-lg text-gray-400 mb-8">
+                            Access the admin dashboard to manage complaints, track metrics, and monitor system activity. Available for department administrators and IT support staff.
+                        </p>
+                        
+                        <!-- Features List -->
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-300">Real-time complaint management</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-300">Advanced analytics & reports</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-300">Complete activity logging</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Login Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="{{ url_for('admin.login') }}" 
+                               class="group inline-flex items-center justify-center px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-indigo-500/50">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                                Admin Login
+                                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                            
+                            <a href="{{ url_for('superadmin.login') }}" 
+                               class="group inline-flex items-center justify-center px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold transition-all duration-300 border border-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                                </svg>
+                                Super Admin
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Visual -->
+                    <div class="relative bg-gradient-to-br from-indigo-600 to-purple-700 p-12 flex items-center justify-center">
+                        <!-- Decorative Grid -->
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute inset-0" style="background-image: linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        </div>
+                        
+                        <!-- Central Icon -->
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-white rounded-3xl blur-2xl opacity-20"></div>
+                            <div class="relative bg-white/10 backdrop-blur-sm rounded-3xl p-12 border border-white/20">
+                                <svg class="w-32 h-32 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m-6-8h6m-3 12a9 9 0 110-18 9 9 0 010 18z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Badges -->
+                        <div class="absolute top-8 left-8 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30 text-white text-sm font-semibold">
+                            🔒 Secure
+                        </div>
+                        <div class="absolute bottom-8 right-8 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30 text-white text-sm font-semibold">
+                            ⚡ Fast
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

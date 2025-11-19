@@ -1,0 +1,431 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block title %}Activity Logs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Activity Logs</h1>
+    <p class="text-gray-600">View all system activity and admin actions</p>
+</div>
+
+<!-- Filters Card -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <h3 class="text-lg font-semibold text-gray-700 flex items-center">
+            <i class="fas fa-filter mr-2"></i>
+            <span>Filter Logs</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label for="actionFilter" class="block text-sm font-medium text-gray-700 mb-1">Action Type</label>
+                <select id="actionFilter" class="form-control">
+                    <option value="all">All Actions</option>
+                    <option value="STATUS_CHANGED">Status Changes</option>
+                    <option value="ADMIN_ASSIGNED">Admin Assignments</option>
+                    <option value="DESCRIPTION_ADDED">Descriptions</option>
+                    <option value="ISSUE_VIEWED">Views</option>
+                    <option value="TAG_CHANGED">Tag Updates</option>
+                </select>
+            </div>
+            <div>
+                <label for="adminFilter" class="block text-sm font-medium text-gray-700 mb-1">Admin</label>
+                <select id="adminFilter" class="form-control">
+                    <option value="all">All Admins</option>
+                    {% for admin in admins %}
+                    <option value="{{ admin.id }}">{{ admin.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="dateFilter" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                <select id="dateFilter" class="form-control">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="week">Last 7 Days</option>
+                    <option value="month">Last 30 Days</option>
+                </select>
+            </div>
+            <div>
+                <label for="searchFilter" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input id="searchFilter" type="text" class="form-control pl-10" placeholder="Complaint ID or action">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 flex justify-end">
+        <button id="applyLogFiltersBtn" type="button" class="btn btn-primary">
+            <i class="fas fa-search"></i>
+            <span>Apply Filters</span>
+        </button>
+    </div>
+</div>
+
+<!-- Logs Table -->
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <!-- Desktop View -->
+    <div class="hidden md:block overflow-x-auto">
+        <table class="w-full" aria-label="Activity logs table">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Complaint ID</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Changes</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="logRows" class="bg-white divide-y divide-gray-200">
+                {% for log in logs %}
+                <tr data-action="{{ log.action }}" data-admin="{{ log.admin.id if log.admin else 'none' }}" data-timestamp="{{ log.timestamp.strftime('%Y-%m-%d') }}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if log.admin %}
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center mr-2 text-xs font-bold">
+                                {{ log.admin.name[0] }}
+                            </span>
+                            <span class="text-sm text-gray-900">{{ log.admin.name }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-sm text-gray-500">System</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{{ url_for('admin.complaint_detail', id=log.complaint.id) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium spa-link">
+                            {{ log.complaint.complaint_id }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="badge 
+                            {% if log.action == 'STATUS_CHANGED' %}badge-in-progress
+                            {% elif log.action == 'ADMIN_ASSIGNED' %}badge-pending
+                            {% elif log.action == 'DESCRIPTION_ADDED' %}badge-resolved
+                            {% elif log.action == 'TAG_CHANGED' %}badge-terminated
+                            {% else %}bg-gray-100 text-gray-800{% endif %} text-xs">
+                            {% if log.action == 'STATUS_CHANGED' %}
+                                <i class="fas fa-exchange-alt mr-1"></i> Status Changed
+                            {% elif log.action == 'ADMIN_ASSIGNED' %}
+                                <i class="fas fa-user-check mr-1"></i> Admin Assigned
+                            {% elif log.action == 'ADMIN_UNASSIGNED' %}
+                                <i class="fas fa-user-minus mr-1"></i> Admin Unassigned
+                            {% elif log.action == 'DESCRIPTION_ADDED' %}
+                                <i class="fas fa-comment-alt mr-1"></i> Description Added
+                            {% elif log.action == 'TAG_CHANGED' %}
+                                <i class="fas fa-tags mr-1"></i> Tags Updated
+                            {% elif log.action == 'ISSUE_VIEWED' %}
+                                <i class="fas fa-eye mr-1"></i> Issue Viewed
+                                {% if log.view_duration %}<span class="text-xs">({{ log.view_duration }}s)</span>{% endif %}
+                            {% else %}
+                                <i class="fas fa-history mr-1"></i> {{ log.action.replace('_', ' ').title() }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if log.old_value or log.new_value %}
+                        <div class="text-sm text-gray-900">
+                            {% if log.action == 'STATUS_CHANGED' %}
+                                <span class="badge badge-outline">{{ log.old_value }}</span>
+                                <i class="fas fa-arrow-right mx-1 text-gray-400"></i>
+                                <span class="badge badge-outline">{{ log.new_value }}</span>
+                            {% elif log.action == 'ADMIN_ASSIGNED' %}
+                                <span class="badge badge-outline">{{ log.new_value }}</span>
+                            {% elif log.action == 'ADMIN_UNASSIGNED' %}
+                                <span class="badge badge-outline">{{ log.old_value }}</span>
+                            {% elif log.action == 'TAG_CHANGED' %}
+                                {% if log.old_value %}{{ log.old_value }}{% else %}none{% endif %} → {{ log.new_value }}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {% if log.description %}
+                            <div class="line-clamp-2">{{ log.description }}</div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-history text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-lg font-medium">No activity logs</p>
+                            <p class="text-sm">There are no logs in the system yet</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Mobile View -->
+    <div class="md:hidden">
+        <div id="mobileLogRows" class="divide-y divide-gray-200">
+            {% for log in logs %}
+            <div data-action="{{ log.action }}" data-admin="{{ log.admin.id if log.admin else 'none' }}" data-timestamp="{{ log.timestamp.strftime('%Y-%m-%d') }}" class="p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-start mb-2">
+                    <a href="{{ url_for('admin.complaint_detail', id=log.complaint.id) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium spa-link">
+                        {{ log.complaint.complaint_id }}
+                    </a>
+                    <span class="text-xs text-gray-500">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                
+                <div class="mb-2">
+                    <span class="badge 
+                        {% if log.action == 'STATUS_CHANGED' %}badge-in-progress
+                        {% elif log.action == 'ADMIN_ASSIGNED' %}badge-pending
+                        {% elif log.action == 'DESCRIPTION_ADDED' %}badge-resolved
+                        {% elif log.action == 'TAG_CHANGED' %}badge-terminated
+                        {% else %}bg-gray-100 text-gray-800{% endif %} text-xs">
+                        {% if log.action == 'STATUS_CHANGED' %}
+                            <i class="fas fa-exchange-alt mr-1"></i> Status Changed
+                        {% elif log.action == 'ADMIN_ASSIGNED' %}
+                            <i class="fas fa-user-check mr-1"></i> Admin Assigned
+                        {% elif log.action == 'ADMIN_UNASSIGNED' %}
+                            <i class="fas fa-user-minus mr-1"></i> Admin Unassigned
+                        {% elif log.action == 'DESCRIPTION_ADDED' %}
+                            <i class="fas fa-comment-alt mr-1"></i> Description Added
+                        {% elif log.action == 'TAG_CHANGED' %}
+                            <i class="fas fa-tags mr-1"></i> Tags Updated
+                        {% elif log.action == 'ISSUE_VIEWED' %}
+                            <i class="fas fa-eye mr-1"></i> Issue Viewed
+                            {% if log.view_duration %}<span class="text-xs">({{ log.view_duration }}s)</span>{% endif %}
+                        {% else %}
+                            <i class="fas fa-history mr-1"></i> {{ log.action.replace('_', ' ').title() }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                {% if log.old_value or log.new_value %}
+                <div class="text-sm text-gray-900 mb-2">
+                    {% if log.action == 'STATUS_CHANGED' %}
+                        <span class="badge badge-outline">{{ log.old_value }}</span>
+                        <i class="fas fa-arrow-right mx-1 text-gray-400"></i>
+                        <span class="badge badge-outline">{{ log.new_value }}</span>
+                    {% elif log.action == 'ADMIN_ASSIGNED' %}
+                        <span class="badge badge-outline">{{ log.new_value }}</span>
+                    {% elif log.action == 'ADMIN_UNASSIGNED' %}
+                        <span class="badge badge-outline">{{ log.old_value }}</span>
+                    {% elif log.action == 'TAG_CHANGED' %}
+                        {% if log.old_value %}{{ log.old_value }}{% else %}none{% endif %} → {{ log.new_value }}
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if log.description %}
+                <div class="text-sm text-gray-500 mb-2">{{ log.description }}</div>
+                {% endif %}
+                
+                <div class="flex items-center mt-2">
+                    {% if log.admin %}
+                    <div class="flex items-center">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center mr-2 text-xs font-bold">
+                            {{ log.admin.name[0] }}
+                        </span>
+                        <span class="text-sm text-gray-900">{{ log.admin.name }}</span>
+                    </div>
+                    {% else %}
+                    <span class="text-sm text-gray-500">System</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="px-6 py-10 text-center text-gray-500">
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-history text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-lg font-medium">No activity logs</p>
+                    <p class="text-sm">There are no logs in the system yet</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="px-6 py-3 flex items-center justify-between border-t">
+        <div class="text-sm text-gray-500">
+            Showing <span class="font-medium">{{ logs|length }}</span> logs
+        </div>
+        <div class="flex gap-1">
+            <button id="prev-page" class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-50 disabled:opacity-50" {% if not pagination.has_prev %}disabled{% endif %}>
+                Previous
+            </button>
+            <span class="px-3 py-1 border rounded bg-indigo-50 text-indigo-600 font-medium">
+                {{ pagination.page }}
+            </span>
+            <button id="next-page" class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-50 disabled:opacity-50" {% if not pagination.has_next %}disabled{% endif %}>
+                Next
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const actionFilter = document.getElementById('actionFilter');
+        const adminFilter = document.getElementById('adminFilter');
+        const dateFilter = document.getElementById('dateFilter');
+        const searchFilter = document.getElementById('searchFilter');
+        const applyLogFiltersBtn = document.getElementById('applyLogFiltersBtn');
+        const desktopRows = document.querySelectorAll('#logRows tr');
+        const mobileRows = document.querySelectorAll('#mobileLogRows > div');
+        
+        function applyFilters() {
+            console.log("Applying log filters");
+            
+            // Show a loading indicator
+            const loaderContainer = document.getElementById('page-loader');
+            if (loaderContainer) {
+                loaderContainer.classList.remove('hidden');
+            }
+            
+            const actionValue = actionFilter.value;
+            const adminValue = adminFilter.value;
+            const dateValue = dateFilter.value;
+            const searchValue = searchFilter.value.trim().toLowerCase();
+            
+            console.log(`Log filter values: action=${actionValue}, admin=${adminValue}, date=${dateValue}, search=${searchValue}`);
+            
+            let visibleCount = 0;
+            
+            // Get date range
+            let dateFrom = null;
+            if (dateValue === 'today') {
+                dateFrom = new Date();
+                dateFrom.setHours(0, 0, 0, 0);
+            } else if (dateValue === 'yesterday') {
+                dateFrom = new Date();
+                dateFrom.setDate(dateFrom.getDate() - 1);
+                dateFrom.setHours(0, 0, 0, 0);
+            } else if (dateValue === 'week') {
+                dateFrom = new Date();
+                dateFrom.setDate(dateFrom.getDate() - 7);
+                dateFrom.setHours(0, 0, 0, 0);
+            } else if (dateValue === 'month') {
+                dateFrom = new Date();
+                dateFrom.setDate(dateFrom.getDate() - 30);
+                dateFrom.setHours(0, 0, 0, 0);
+            }
+            
+            // Filter desktop rows
+            desktopRows.forEach((row) => {
+                // Skip the "no logs found" row
+                if (!row.hasAttribute('data-action')) return;
+                
+                const matchesAction = actionValue === 'all' || row.dataset.action === actionValue;
+                const matchesAdmin = adminValue === 'all' || row.dataset.admin === adminValue;
+                
+                let matchesDate = true;
+                if (dateFrom) {
+                    const rowDate = new Date(row.dataset.timestamp);
+                    matchesDate = rowDate >= dateFrom;
+                }
+                
+                const rowContent = row.textContent.toLowerCase();
+                const matchesSearch = !searchValue || rowContent.includes(searchValue);
+                
+                const visible = matchesAction && matchesAdmin && matchesDate && matchesSearch;
+                row.style.display = visible ? '' : 'none';
+                
+                if (visible) visibleCount++;
+            });
+            
+            // Filter mobile rows
+            mobileRows.forEach((row) => {
+                // Skip the "no logs found" row
+                if (!row.hasAttribute('data-action')) return;
+                
+                const matchesAction = actionValue === 'all' || row.dataset.action === actionValue;
+                const matchesAdmin = adminValue === 'all' || row.dataset.admin === adminValue;
+                
+                let matchesDate = true;
+                if (dateFrom) {
+                    const rowDate = new Date(row.dataset.timestamp);
+                    matchesDate = rowDate >= dateFrom;
+                }
+                
+                const rowContent = row.textContent.toLowerCase();
+                const matchesSearch = !searchValue || rowContent.includes(searchValue);
+                
+                const visible = matchesAction && matchesAdmin && matchesDate && matchesSearch;
+                row.style.display = visible ? '' : 'none';
+            });
+            
+            // Show "no results" row if needed - desktop view
+            const noResultsRow = document.querySelector('#logRows tr:not([data-action])');
+            if (noResultsRow) {
+                noResultsRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
+            
+            // Show "no results" row if needed - mobile view
+            const noResultsRowMobile = document.querySelector('#mobileLogRows > div:not([data-action])');
+            if (noResultsRowMobile) {
+                noResultsRowMobile.style.display = visibleCount === 0 ? '' : 'none';
+            }
+            
+            console.log(`Log filters applied: ${visibleCount} items visible`);
+            
+            // Hide loader after a short delay
+            if (loaderContainer) {
+                setTimeout(() => {
+                    loaderContainer.classList.add('hidden');
+                }, 200);
+            }
+        }
+        
+        // Add event listener to apply filters button
+        if (applyLogFiltersBtn) {
+            applyLogFiltersBtn.addEventListener('click', applyFilters);
+        } else {
+            console.warn("Apply log filters button not found");
+        }
+        
+        // Allow pressing Enter in the search field to apply filters
+        if (searchFilter) {
+            searchFilter.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyFilters();
+                }
+            });
+        }
+        
+        // Pagination handlers
+        const prevButton = document.getElementById('prev-page');
+        const nextButton = document.getElementById('next-page');
+        
+        if (prevButton) {
+            prevButton.addEventListener('click', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentPage = parseInt(urlParams.get('page') || 1);
+                if (currentPage > 1) {
+                    urlParams.set('page', currentPage - 1);
+                    window.location.search = urlParams.toString();
+                }
+            });
+        }
+        
+        if (nextButton) {
+            nextButton.addEventListener('click', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentPage = parseInt(urlParams.get('page') || 1);
+                urlParams.set('page', currentPage + 1);
+                window.location.search = urlParams.toString();
+            });
+        }
+        
+        // Initial filter application
+        applyFilters();
+    });
+</script>
+{% endblock %}

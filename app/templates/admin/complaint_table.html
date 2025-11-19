@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Complaints Table{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold text-blue-600 mb-4">All Complaints</h2>
+    <div class="overflow-x-auto">
+        <table class="table table-striped table-bordered w-full">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Lab</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comp in complaints %}
+                    <tr>
+                        <td>{{ comp.complaint_id }}</td>
+                        <td>{{ comp.email }}</td>
+                        <td>{{ comp.name }}</td>
+                        <td>{{ comp.lab.name }}</td>
+                        <td>{{ comp.category }}</td>
+                        <td>{{ comp.status }}</td>
+                        <td>{{ comp.priority }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.complaint_detail', complaint_id=comp.complaint_id) }}" class="text-blue-600 hover:underline">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

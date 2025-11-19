@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechResolve Admin - {% block title %}{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .sidebar-item:hover {
+            background-color: #eef2ff;
+            color: #4338ca;
+        }
+        
+        .sidebar-item.active {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left-width: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            padding: 0.75rem;
+            border-radius: 9999px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Page loader */
+        #page-loader {
+            transition: opacity 0.3s ease-out;
+        }
+        
+        /* Notification animation */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        /* SPA transition effects */
+        .page-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .page-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Page loader -->
+    <div id="page-loader" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center hidden">
+        <div class="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+    </div>
+    
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white w-64 shadow-md z-10 fixed h-full transition-all duration-300">
+            <div class="flex flex-col h-full">
+                <!-- Logo -->
+                <div class="p-5 border-b flex items-center justify-between">
+                    <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold text-indigo-700 flex items-center gap-2 spa-link" data-page="dashboard">
+                        <i class="fas fa-tools"></i>
+                        <span>TechResolve</span>
+                    </a>
+                    <button id="sidebar-toggle" class="lg:hidden text-gray-500 hover:text-gray-800" aria-label="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                        <span class="sr-only">Toggle sidebar</span>
+                    </button>
+                </div>
+                
+                <!-- Admin info -->
+                <div class="p-5 border-b">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                            {{ session.get('admin_name', 'A')[0] }}
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">{{ session.get('admin_name', 'Admin') }}</div>
+                            <div class="text-xs text-gray-500">Administrator</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+                    <a href="{{ url_for('admin.dashboard') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.dashboard' else '' }} spa-link" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt w-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('admin.complaint_list') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.complaint_list' else '' }} spa-link" data-page="complaints">
+                        <i class="fas fa-clipboard-list w-5"></i>
+                        <span>All Complaints</span>
+                    </a>
+                    <a href="{{ url_for('admin.complaint_list') }}?status=Pending" class="sidebar-item {{ 'active' if request.endpoint == 'admin.complaint_list' and request.args.get('status') == 'Pending' else '' }} spa-link" data-page="pending-complaints">
+                        <i class="fas fa-exclamation-circle w-5"></i>
+                        <span>Pending Complaints</span>
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.reports' else '' }} spa-link" data-page="reports">
+                        <i class="fas fa-chart-bar w-5"></i>
+                        <span>Reports</span>
+                    </a>
+                    <a href="{{ url_for('admin.logs') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.logs' else '' }} spa-link" data-page="logs">
+                        <i class="fas fa-history w-5"></i>
+                        <span>Activity Logs</span>
+                    </a>
+                    <a href="{{ url_for('admin.settings') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.settings' else '' }} spa-link" data-page="settings">
+                        <i class="fas fa-cog w-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+                
+                <!-- Bottom section -->
+                <div class="p-4 border-t">
+                    <a href="{{ url_for('admin.logout') }}" class="sidebar-item text-red-600 hover:text-red-700 hover:bg-red-50">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile sidebar overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[5] hidden lg:hidden" onclick="toggleSidebar()"></div>
+        
+        <!-- Main content -->
+        <div id="content" class="flex-1 ml-64 transition-all duration-300">
+            <!-- Header -->
+            <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between sticky top-0 z-[4]">
+                <button id="mobile-sidebar-button" class="lg:hidden text-gray-600" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars text-xl"></i>
+                    <span class="sr-only">Toggle sidebar</span>
+                </button>
+                
+                <div class="flex items-center gap-2 ml-auto">
+                    <a href="{{ url_for('main.home') }}" class="text-gray-600 hover:text-gray-800" title="Go to Homepage">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <div class="relative group">
+                        <button class="p-2 text-gray-600 hover:text-gray-800" aria-label="View notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="sr-only">View notifications</span>
+                        </button>
+                        <div class="absolute right-0 top-full mt-1 w-72 bg-white shadow-lg rounded-lg p-3 hidden group-hover:block">
+                            <div class="font-medium mb-2">Notifications</div>
+                            <div class="text-sm text-gray-500">No new notifications</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Notification container -->
+            <div id="notification-container" class="px-6 pt-4">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert mb-4 p-4 rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }} flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-circle' }}"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                                <button class="text-gray-500 hover:text-gray-700" onclick="this.parentElement.remove()" aria-label="Dismiss notification">
+                                    <i class="fas fa-times"></i>
+                                    <span class="sr-only">Dismiss notification</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            
+            <!-- Page content -->
+            <main id="main-content" class="p-6">
+                <div data-block="content">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="border-t mt-auto p-4 text-center text-sm text-gray-500">
+                <div>&copy; {{ current_year }} Department of Computer Applications - PSG Tech. All Rights Reserved.</div>
+            </footer>
+        </div>
+    </div>
+    <!-- Admin SPA JS -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const overlay = document.getElementById('sidebar-overlay');
+            const mobileButton = document.getElementById('mobile-sidebar-button');
+            
+            if (sidebar.classList.contains('ml-[-16rem]')) {
+                // Show sidebar
+                sidebar.classList.remove('ml-[-16rem]');
+                if (window.innerWidth < 1024) {
+                    content.classList.add('ml-0');
+                } else {
+                    content.classList.add('ml-64');
+                }
+                overlay.classList.remove('hidden');
+                mobileButton.setAttribute('aria-expanded', 'true');
+            } else {
+                // Hide sidebar
+                sidebar.classList.add('ml-[-16rem]');
+                if (window.innerWidth < 1024) {
+                    content.classList.add('ml-0');
+                    content.classList.remove('ml-64');
+                }
+                overlay.classList.add('hidden');
+                mobileButton.setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        // Handle responsive layout
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('ml-[-16rem]');
+                content.classList.add('ml-0');
+                content.classList.remove('ml-64');
+            } else {
+                sidebar.classList.remove('ml-[-16rem]');
+                content.classList.remove('ml-0');
+                content.classList.add('ml-64');
+                overlay.classList.add('hidden');
+            }
+        }
+        
+        // Helper functions for SPA
+        function showLoader() {
+            document.getElementById('page-loader').classList.remove('hidden');
+        }
+        
+        function hideLoader() {
+            document.getElementById('page-loader').classList.add('hidden');
+        }
+        
+        // Event listeners for sidebar toggle buttons
+        document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
+        document.getElementById('mobile-sidebar-button').addEventListener('click', toggleSidebar);
+        
+        // Initialize
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        
+        // Initialize SPA
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AdminSPA
+            if (typeof AdminSPA !== 'undefined') {
+                AdminSPA.init();
+            }
+        });
+    </script>
+</body>
+</html>

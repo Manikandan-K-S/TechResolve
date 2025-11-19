@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ complaint.complaint_id }} - Complaint Details{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header Section with Breadcrumb -->
+        <div class="mb-6">
+            <nav class="flex items-center text-sm text-gray-600 mb-4">
+                <a href="{{ url_for('main.home') }}" class="hover:text-indigo-600">Home</a>
+                <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+                <a href="{{ url_for('user.track_complaint') }}" class="hover:text-indigo-600">Track Complaint</a>
+                <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+                <span class="text-gray-900 font-medium">{{ complaint.complaint_id }}</span>
+            </nav>
+            
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Complaint Details</h1>
+                    <p class="text-gray-600">Track the status and updates of your complaint</p>
+                </div>
+                <a href="{{ url_for('user.track_complaint') }}"
+                   class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Track
+                </a>
+            </div>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center
+                        {% if complaint.status == 'Resolved' %}bg-green-100
+                        {% elif complaint.status == 'In Progress' %}bg-blue-100
+                        {% elif complaint.status == 'Pending' %}bg-amber-100
+                        {% else %}bg-red-100{% endif %}">
+                        <svg class="w-8 h-8 
+                            {% if complaint.status == 'Resolved' %}text-green-600
+                            {% elif complaint.status == 'In Progress' %}text-blue-600
+                            {% elif complaint.status == 'Pending' %}text-amber-600
+                            {% else %}text-red-600{% endif %}" 
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {% if complaint.status == 'Resolved' %}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            {% elif complaint.status == 'In Progress' %}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            {% elif complaint.status == 'Pending' %}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            {% else %}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            {% endif %}
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500 mb-1">Current Status</div>
+                        <div class="text-2xl font-bold
+                            {% if complaint.status == 'Resolved' %}text-green-600
+                            {% elif complaint.status == 'In Progress' %}text-blue-600
+                            {% elif complaint.status == 'Pending' %}text-amber-600
+                            {% else %}text-red-600{% endif %}">
+                            {{ complaint.status }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-right">
+                    <div class="text-sm text-gray-500 mb-1">Complaint ID</div>
+                    <div class="text-xl font-bold text-gray-900">{{ complaint.complaint_id }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Complaint Information Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Complaint Information
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <!-- Category & Priority -->
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <div class="text-xs font-medium text-gray-500 uppercase mb-2">Category</div>
+                                    <div class="flex items-center">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-lg bg-indigo-100 text-indigo-700 text-sm font-semibold">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                            </svg>
+                                            {{ complaint.category }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <div class="text-xs font-medium text-gray-500 uppercase mb-2">Priority</div>
+                                    <div class="flex items-center">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold
+                                            {% if complaint.priority == 'High' %}bg-red-100 text-red-700
+                                            {% elif complaint.priority == 'Medium' %}bg-amber-100 text-amber-700
+                                            {% else %}bg-green-100 text-green-700{% endif %}">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                            </svg>
+                                            {{ complaint.priority or 'Not Set' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4">
+                                <div class="text-xs font-medium text-gray-500 uppercase mb-2">Description</div>
+                                <p class="text-gray-800 leading-relaxed">{{ complaint.description }}</p>
+                            </div>
+
+                            <!-- Resolution Notes -->
+                            {% if complaint.resolution_notes %}
+                            <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <div class="text-xs font-medium text-green-700 uppercase">Resolution Notes</div>
+                                </div>
+                                <p class="text-gray-800 leading-relaxed">{{ complaint.resolution_notes }}</p>
+                            </div>
+                            {% endif %}
+
+                            <!-- Attachment -->
+                            {% if complaint.attachment_path %}
+                            <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                                <div class="text-xs font-medium text-blue-700 uppercase mb-2">Attachment</div>
+                                <a href="{{ url_for('main.uploaded_file', filename=complaint.attachment_path) }}"
+                                   target="_blank"
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"/>
+                                    </svg>
+                                    View Attachment
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Timeline -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Activity Timeline
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        {% if complaint.logs %}
+                        <div class="space-y-6">
+                            {% for log in complaint.logs | sort(attribute='timestamp', reverse=True) %}
+                            <div class="relative pl-8 pb-6 border-l-2 
+                                {% if log.action in ['STATUS_CHANGED'] and log.new_value == 'Resolved' %}border-green-300
+                                {% elif log.action in ['ADMIN_ASSIGNED', 'TAG_CHANGED'] %}border-blue-300
+                                {% elif log.action == 'STATUS_CHANGED' and log.new_value == 'Terminated' %}border-red-300
+                                {% else %}border-gray-300{% endif %} 
+                                last:border-transparent last:pb-0">
+                                <!-- Timeline Icon -->
+                                <div class="absolute -left-3 top-0 w-6 h-6 rounded-full flex items-center justify-center
+                                    {% if log.action in ['STATUS_CHANGED'] and log.new_value == 'Resolved' %}bg-green-100 border-2 border-green-300
+                                    {% elif log.action in ['ADMIN_ASSIGNED', 'TAG_CHANGED'] %}bg-blue-100 border-2 border-blue-300
+                                    {% elif log.action == 'STATUS_CHANGED' and log.new_value == 'Terminated' %}bg-red-100 border-2 border-red-300
+                                    {% else %}bg-gray-100 border-2 border-gray-300{% endif %}">
+                                    <svg class="w-3 h-3
+                                        {% if log.action in ['STATUS_CHANGED'] and log.new_value == 'Resolved' %}text-green-600
+                                        {% elif log.action in ['ADMIN_ASSIGNED', 'TAG_CHANGED'] %}text-blue-600
+                                        {% elif log.action == 'STATUS_CHANGED' and log.new_value == 'Terminated' %}text-red-600
+                                        {% else %}text-gray-600{% endif %}" 
+                                        fill="currentColor" viewBox="0 0 20 20">
+                                        {% if log.action in ['STATUS_CHANGED'] and log.new_value == 'Resolved' %}
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        {% elif log.action in ['ADMIN_ASSIGNED', 'ADMIN_UNASSIGNED'] %}
+                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                        {% elif log.action == 'TAG_CHANGED' %}
+                                            <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd"/>
+                                        {% elif log.action == 'STATUS_CHANGED' and log.new_value == 'Terminated' %}
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                        {% else %}
+                                            <circle cx="10" cy="10" r="6"/>
+                                        {% endif %}
+                                    </svg>
+                                </div>
+
+                                <!-- Timeline Content -->
+                                <div class="bg-gray-50 rounded-xl p-4 hover:shadow-md transition-all">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold
+                                                {% if log.action in ['STATUS_CHANGED'] and log.new_value == 'Resolved' %}bg-green-100 text-green-700
+                                                {% elif log.action in ['ADMIN_ASSIGNED', 'TAG_CHANGED'] %}bg-blue-100 text-blue-700
+                                                {% elif log.action == 'STATUS_CHANGED' and log.new_value == 'Terminated' %}bg-red-100 text-red-700
+                                                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                                {% if log.action == 'STATUS_CHANGED' %}Status Updated
+                                                {% elif log.action == 'TAG_CHANGED' %}Tags Modified
+                                                {% elif log.action == 'ADMIN_ASSIGNED' %}Admin Assigned
+                                                {% elif log.action == 'ADMIN_UNASSIGNED' %}Admin Unassigned
+                                                {% elif log.action == 'DESCRIPTION_ADDED' %}Update Added
+                                                {% elif log.action == 'ISSUE_VIEWED' %}Complaint Viewed
+                                                {% else %}{{ log.action }}{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="text-xs text-gray-500 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            {{ log.timestamp.strftime('%b %d, %Y at %I:%M %p') }}
+                                        </div>
+                                    </div>
+                                    <div class="text-gray-700 text-sm mb-2">
+                                        {% if log.action == 'STATUS_CHANGED' %}
+                                            Status changed from <span class="font-semibold text-gray-900">{{ log.old_value or 'N/A' }}</span> to <span class="font-semibold text-indigo-600">{{ log.new_value }}</span>
+                                        {% elif log.action == 'TAG_CHANGED' %}
+                                            Tags updated from <span class="font-semibold text-gray-900">{{ log.old_value or 'none' }}</span> to <span class="font-semibold text-indigo-600">{{ log.new_value }}</span>
+                                        {% elif log.action == 'ADMIN_ASSIGNED' %}
+                                            Assigned to <span class="font-semibold text-indigo-600">{{ log.new_value }}</span>
+                                        {% elif log.action == 'ADMIN_UNASSIGNED' %}
+                                            Unassigned admin <span class="font-semibold text-gray-900">{{ log.old_value }}</span>
+                                        {% elif log.action == 'DESCRIPTION_ADDED' %}
+                                            {{ log.description }}
+                                        {% elif log.action == 'ISSUE_VIEWED' %}
+                                            Complaint was reviewed by admin{% if log.view_duration %} ({{ log.view_duration }} seconds){% endif %}
+                                        {% else %}
+                                            {{ log.action }}
+                                        {% endif %}
+                                    </div>
+                                    {% if log.description and log.action not in ['DESCRIPTION_ADDED'] %}
+                                    <div class="bg-white rounded-lg p-2 mt-2 border border-gray-200">
+                                        <div class="text-xs text-gray-500 mb-1">Additional Remarks:</div>
+                                        <div class="text-xs text-gray-700">{{ log.description }}</div>
+                                    </div>
+                                    {% endif %}
+                                    <div class="flex items-center text-xs text-gray-600 mt-2">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                        <span class="font-medium">{{ log.admin.name if log.admin else 'System' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-12">
+                            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-gray-500 text-lg">No activity logs available yet</p>
+                            <p class="text-gray-400 text-sm mt-1">Updates will appear here as your complaint is processed</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Quick Info Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-3 border-b border-gray-200">
+                        <h3 class="text-sm font-semibold text-gray-900">Quick Information</h3>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <!-- Submitted By -->
+                        <div class="bg-gray-50 rounded-xl p-3">
+                            <div class="text-xs font-medium text-gray-500 uppercase mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Submitted By
+                            </div>
+                            <div class="text-sm font-semibold text-gray-900">{{ complaint.name }}</div>
+                            <div class="text-xs text-gray-600 mt-1 break-all">{{ complaint.email }}</div>
+                        </div>
+
+                        <!-- Lab -->
+                        <div class="bg-gray-50 rounded-xl p-3">
+                            <div class="text-xs font-medium text-gray-500 uppercase mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                                Lab
+                            </div>
+                            <div class="text-sm font-semibold text-gray-900">{{ complaint.lab.name }}</div>
+                        </div>
+
+                        <!-- Assigned Admin -->
+                        <div class="bg-gray-50 rounded-xl p-3">
+                            <div class="text-xs font-medium text-gray-500 uppercase mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                </svg>
+                                Assigned To
+                            </div>
+                            {% if complaint.assigned_admin %}
+                            <div class="text-sm font-semibold text-gray-900">{{ complaint.assigned_admin.name }}</div>
+                            {% else %}
+                            <div class="text-sm text-gray-500 italic">Not yet assigned</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Timestamps -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="text-xs font-medium text-blue-700 uppercase mb-1">Created</div>
+                                    <div class="text-xs text-gray-700">{{ complaint.created_at.strftime('%b %d, %Y at %I:%M %p') }}</div>
+                                </div>
+                                <div class="border-t border-blue-200 pt-2">
+                                    <div class="text-xs font-medium text-blue-700 uppercase mb-1">Last Updated</div>
+                                    <div class="text-xs text-gray-700">{{ complaint.updated_at.strftime('%b %d, %Y at %I:%M %p') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-lg overflow-hidden">
+                    <div class="p-6 text-white">
+                        <div class="flex items-center mb-3">
+                            <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <h3 class="text-lg font-bold">Need Help?</h3>
+                        </div>
+                        <p class="text-blue-100 text-sm mb-4">
+                            Our team is working on your complaint. You'll receive email notifications for any updates.
+                        </p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center text-blue-50">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Check email regularly
+                            </div>
+                            <div class="flex items-center text-blue-50">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Track via complaint ID
+                            </div>
+                            <div class="flex items-center text-blue-50">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Response within 24-48 hrs
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scroll to Top Button -->
+<button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+        class="fixed bottom-6 right-6 w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+</button>
+{% endblock %}
